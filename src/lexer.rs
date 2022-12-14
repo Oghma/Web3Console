@@ -25,3 +25,34 @@ pub fn tokenize(command: &str) -> Result<Vec<LexerItem>, &str> {
 
     Ok(tokens)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_tokenize() {
+        assert_eq!(
+            tokenize("Token 0x0000000000000000000000000000000000000000"),
+            Ok(vec![
+                LexerItem::Token,
+                LexerItem::Address("0x0000000000000000000000000000000000000000")
+            ])
+        );
+
+        assert_eq!(
+            tokenize("0x0000000000000000000000000000000000000000").unwrap(),
+            vec![LexerItem::Address(
+                "0x0000000000000000000000000000000000000000"
+            )]
+        );
+
+        assert_eq!(tokenize("Token").unwrap(), vec![LexerItem::Token]);
+    }
+
+    #[test]
+    #[should_panic(expected = "Unknown command")]
+    fn fail_uknonw_command() {
+        tokenize("x0000000000000000000000000000000000000000").unwrap();
+    }
+}
