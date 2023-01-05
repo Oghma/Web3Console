@@ -10,7 +10,7 @@ pub enum LexerItem<'a> {
 
 // Tokenize the command received
 pub fn tokenize(command: &str) -> Result<Vec<LexerItem>, &str> {
-    let words = command.split(" ");
+    let words = command.split_whitespace();
     let mut tokens: Vec<LexerItem> = Vec::new();
 
     for word in words {
