@@ -27,7 +27,7 @@ impl EvalCommand {
                 self.eval_token(addr).await.or(Err("Failed to fetch Token"))
             }
 
-            _ => Ok(String::from("")),
+            _ => Err("Unknonwn command or not yet supported"),
         }
     }
 
