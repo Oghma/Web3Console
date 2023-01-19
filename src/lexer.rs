@@ -6,6 +6,7 @@ pub enum LexerItem<'a> {
     Address(&'a str),
     Token,
     Contract,
+    Abi,
 }
 
 // Tokenize the command received
@@ -17,6 +18,7 @@ pub fn tokenize(command: &str) -> Result<Vec<LexerItem>, &str> {
         let token = match word {
             "Token" => LexerItem::Token,
             "Contract" => LexerItem::Contract,
+            "Abi" => LexerItem::Abi,
             _ if word.starts_with("0x") => LexerItem::Address(word),
             _ => return Err("Unknown command"),
         };

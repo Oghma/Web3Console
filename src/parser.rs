@@ -26,6 +26,7 @@ impl<'a> From<LexerItem<'a>> for Address<'a> {
 pub enum Command<'a> {
     Token { address: Address<'a> },
     Contract { address: Address<'a> },
+    Abi { address: Address<'a> },
 }
 
 pub fn parse<'a, 'b>(tokens: &Vec<LexerItem<'a>>) -> Result<Command<'a>, &'b str> {
@@ -35,6 +36,9 @@ pub fn parse<'a, 'b>(tokens: &Vec<LexerItem<'a>>) -> Result<Command<'a>, &'b str
 fn parse_command<'a, 'b>(tokens: &[LexerItem<'a>]) -> Result<Command<'a>, &'b str> {
     match tokens[0] {
         LexerItem::Token => Ok(Command::Token {
+            address: parse_address(&tokens[1..])?,
+        }),
+        LexerItem::Abi => Ok(Command::Abi {
             address: parse_address(&tokens[1..])?,
         }),
         LexerItem::Contract => Err("Not yet supported"),

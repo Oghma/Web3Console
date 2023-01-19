@@ -8,7 +8,7 @@ use ethers::{
     prelude::{Address, Http, Provider, Uint8},
 };
 
-use crate::parser;
+use crate::{format_vec, parser};
 
 pub struct EvalCommand {
     client: Arc<Provider<Http>>,
@@ -26,9 +26,38 @@ impl EvalCommand {
             parser::Command::Token { address: addr } => {
                 self.eval_token(addr).await.or(Err("Failed to fetch Token"))
             }
-
+            parser::Command::Abi { address: addr } => self
+                .eval_abi(addr)
+                .await
+                .or(Err("Unable to parse `Abi` command")),
             _ => Err("Unknonwn command or not yet supported"),
         }
+    }
+
+    async fn eval_abi(
+        &self,
+        address: &parser::Address<'_>,
+    ) -> Result<String, Box<dyn std::error::Error>> {
+        let contract = self.fetch_contract(address).await?;
+        let abi = contract.abi();
+
+        let functions: Vec<String> = abi
+            .functions
+            .iter()
+            .flat_map(|(_, function)| function.iter().map(|fun| fun.signature()))
+            .collect();
+
+        let events: Vec<String> = abi
+            .events
+            .iter()
+            .flat_map(|(_, event)| event.iter().map(|eve| eve.name.clone()))
+            .collect();
+
+        Ok(format!(
+            "\nFunctions:\n{}\n\nEvents:\n{}",
+            format_vec!(functions, 2),
+            format_vec!(events, 2)
+        ))
     }
 
     async fn eval_token(
