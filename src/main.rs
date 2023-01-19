@@ -3,6 +3,7 @@ use std::io::{self, Write};
 mod eval;
 mod lexer;
 mod parser;
+mod utilities;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
